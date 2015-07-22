@@ -1,6 +1,6 @@
-# Maxmind GeoIp Library #
+# Maxmind GeoIp2 Symfony Bundle #
 
-To install this library please follow the next steps:
+To install this bundle please follow the next steps:
 
 First add the dependencie to your `composer.json` file:
 
@@ -32,34 +32,35 @@ public function registerBundles()
 }
 ```
 
-Now the library is installed.
+Now the bundle is installed.
 
-To get the maxmind data source file (in '.dat' format), you can choose between 
-one of the two following purposed methods:
+First you have to install the dabase file.
 
-You can go on the maxmind free download data page:
-http://dev.maxmind.com/geoip/geolite
-And get the needed version. Then you have to unzip the downloaded file in the data
-directory located in 'vendor/maxmind/geoip/data'.
-
-Or you can simply execute this command:
+You can simply execute this command:
 
 ```sh
-php app/console maxmind:geoip:update-data %url-data-source%
+php app/console maxmind:geoip:downloadpackage %url-data-source%
 ```
 
-Replace %url-data-source% with the url of the needed data source.
-ex: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+Replace %url-data-source% with the url of the needed data source (gz format).
+ex: http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz
+
+Or you can download the free version here:
+http://dev.maxmind.com/geoip/geoip2/geolite2/
+Then you have to unpack it into directory located in 'app/Resources/geodb/'.
 
 If you want to use your data file in another directory, you can configure it on `app\config\config.yml`
+You can also configure the name of the file and the language of the displayed values.
 
 ```yaml
 # app/config/config.yml
 maxmind_geoip:
-	data_file_path: "%kernel.root_dir%/../web/GeoIPCity.dat"
+    data_file_path:             "%kernel.root_dir%/Resources/geodb/"
+    data_file_name:             "GeoLite2-City.mmdb"
+    language:                   fr
 ```
 
-Now can use the Maxmind GeoIp Library everywhere in your Symfony2 application.
+Now can use the Maxmind GeoIp2 Library everywhere in your Symfony2 application.
 
 Usage
 -----
@@ -67,32 +68,19 @@ Usage
 The following exemples are available if you are in a controller
 
 ```php
-$geoip = $this->get('maxmind.geoip')->lookup(%IP_ADDR%);
+$geoip = $this->get('maxmind.geoip')->getRecord($miscIP);
 
-$geoip->getCountryCode();
-$geoip->getCountryCode3();
-$geoip->getCountryName();
-$geoip->getRegion();
 $geoip->getCity();
+$geoip->getCountry();
+$geoip->getCountryCode();
 $geoip->getPostalCode();
 $geoip->getLatitude();
 $geoip->getLongitude();
 $geoip->getAreaCode();
-$geoip->getMetroCode();
+$geoip->getContinent();
 $geoip->getContinentCode();
+$geoip->getMostSpecificSubdivision()
 ```
 
-You can add a demo route in your 'routing_dev' to get an exemple on how
-this bundle work for exemple:
-
-```yaml
-_maxmind_geoip:
-    resource: "@MaxmindGeoipBundle/Controller/DemoController.php"
-    type:     annotation
-    prefix:   /demo
-```
-
-Get a lookup at /demo/geoip
-
-This library is an import of Maxmind GeoIp Free Library,
-you can find at http://www.maxmind.com/
+This bundle use Maxmind GeoIp2 API,
+you can find at https://github.com/maxmind/GeoIP2-php
