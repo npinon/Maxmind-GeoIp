@@ -20,19 +20,15 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('maxmind_geoip');
 
-        $path = realpath(__DIR__."/../../../../../data/GeoLiteCity.dat");
-
-       	$info = "The file path to the .dat file (e.g. the GeoLiteCity.dat) to be used for ip-geo-locating.";
-
-        if($path === false){
-        	$path = __DIR__."/../../../../../data/GeoLiteCity.dat";
-        	$info .="\nThe file is not yet present. Download it from http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz and unzip it.";
-        }
+        $path = '%kernel.root_dir%/Resources/geodb/';
+        $name = 'GeoLite2-City.mmdb';
+        $language = 'fr';
 
         $rootNode
         	->children()
-        		->scalarNode("data_file_path")->defaultValue($path)->info($info)
-        		->end()
+        		->scalarNode("data_file_path")->isRequired()->cannotBeEmpty()->defaultValue($path)->end()
+                ->scalarNode("data_file_name")->isRequired()->cannotBeEmpty()->defaultValue($name)->end()
+                ->scalarNode("language")->isRequired()->cannotBeEmpty()->defaultValue($language)->end()
         	->end();
 
         return $treeBuilder;

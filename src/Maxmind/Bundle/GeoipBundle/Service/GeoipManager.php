@@ -2,168 +2,96 @@
 
 namespace Maxmind\Bundle\GeoipBundle\Service;
 
-use Symfony\Component\HttpKernel\Kernel;
-
-use Maxmind\lib\GeoIp;
-use Maxmind\lib\GeoIpRegionVars;
+use GeoIp2\Database\Reader;
 
 class GeoipManager
 {
-    protected $geoip = null;
+    protected $filePath;
 
-    protected $record = null;
+    protected $fileName;
 
-    public function __construct(Kernel $kernel)
+    protected $locale;
+
+    protected $geoip2;
+
+    protected $record;
+
+    public function __construct($filePath, $fileName, $locale)
     {
-    	$filePath = $kernel->getContainer()->getParameter('maxmind_geoip_data_file_path');
-        $this->geoip = new GeoIp($filePath);
+        $this->locale = $locale;
+        $this->database = $filePath.$fileName;
+        $this->geoip2 = new Reader($this->database);
     }
 
-    public function lookup($ip)
+    public function getRecord($ipAddress)
     {
-        $this->record = $this->geoip->geoip_record_by_addr($ip);
+        $this->record = $this->geoip2->city($ipAddress);
 
         if ($this->record)
+        {
             return $this;
+        }
 
         return false;
     }
 
-    public function getCountryCode($ip = null)
+    public function getCity()
     {
-        if ($ip)
-            $this->lookup($ip);
-
         if ($this->record)
-            return $this->record->country_code;
+        {
+            return $this->record->city->name;
+        }
 
-        return $this->record;
+        return false;
     }
 
-    public function getCountryCode3($ip = null)
+    public function getContinent()
     {
-        if ($ip)
-            $this->lookup($ip);
-
         if ($this->record)
-            return $this->record->country_code3;
+        {
+            return $this->record->continent->names[$this->locale];
+        }
 
-        return $this->record;
+        return false;
     }
 
-    public function getCountryName($ip = null)
+    public function getCountry()
     {
-        if ($ip)
-            $this->lookup($ip);
-
         if ($this->record)
-            return $this->record->country_name;
+        {
+            return $this->record->country->names[$this->locale];
+        }
 
-        return $this->record;
+        return false;
     }
 
-    public function getRegionCode($ip = null)
+    public function getLatitude()
     {
-        if ($ip)
-            $this->lookup($ip);
-
         if ($this->record)
-          return $this->record->region;
+        {
+            return $this->record->location->latitude;
+        }
 
-        return $this->record;
+        return false;
     }
 
-    public function getRegion($ip = null)
+    public function getLongitude()
     {
-        if ($ip)
-            $this->lookup($ip);
+        if ($this->record)
+        {
+            return $this->record->location->longitude;
+        }
 
-        if ($this->record
-                && $this->record->country_code
-                && $this->record->region
-        )
-          return GeoIpRegionVars::$GEOIP_REGION_NAME
-            [$this->record->country_code]
-            [$this->record->region]
-          ;
-
-        return null;
+        return false;
     }
 
-    public function getCity($ip = null)
+    public function getMostSpecificSubdivision()
     {
-        if ($ip)
-            $this->lookup($ip);
-
         if ($this->record)
-            return $this->record->city;
+        {
+            return $this->record->mostSpecificSubdivision->names[$this->locale];
+        }
 
-        return $this->record;
-    }
-
-    public function getPostalCode($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->postal_code;
-
-        return $this->record;
-    }
-
-    public function getLatitude($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->latitude;
-
-        return $this->record;
-    }
-
-    public function getLongitude($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->longitude;
-
-        return $this->record;
-    }
-
-    public function getAreaCode($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->area_code;
-
-        return $this->record;
-    }
-
-    public function getMetroCode($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->metro_code;
-
-        return $this->record;
-    }
-
-    public function getContinentCode($ip = null)
-    {
-        if ($ip)
-            $this->lookup($ip);
-
-        if ($this->record)
-            return $this->record->continent_code;
-
-        return $this->record;
+        return false;
     }
 }
