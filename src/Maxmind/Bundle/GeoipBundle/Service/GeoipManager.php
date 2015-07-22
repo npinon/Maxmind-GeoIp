@@ -55,11 +55,41 @@ class GeoipManager
         return false;
     }
 
+    public function getContinentCode()
+    {
+        if ($this->record)
+        {
+            return $this->record->continent->code;
+        }
+
+        return false;
+    }
+
     public function getCountry()
     {
         if ($this->record)
         {
             return $this->record->country->names[$this->locale];
+        }
+
+        return false;
+    }
+
+    public function getCountryCode()
+    {
+        if ($this->record)
+        {
+            return $this->record->country->isoCode;
+        }
+
+        return false;
+    }
+
+    public function getPostalCode()
+    {
+        if ($this->record)
+        {
+            return $this->record->postal->code;
         }
 
         return false;
@@ -80,6 +110,16 @@ class GeoipManager
         if ($this->record)
         {
             return $this->record->location->longitude;
+        }
+
+        return false;
+    }
+
+    public function getAreaCode()
+    {
+        if ($this->record)
+        {
+            return $this->record->mostSpecificSubdivision->isoCode;
         }
 
         return false;
