@@ -6,7 +6,8 @@
     "version": "1.0.0",
     "license": "BSD",
     "require": {
-        "php": ">=5.3"
+        "php": ">=5.3",
+        "geoip2/geoip2":"~2.3"
     },
     "authors": [
         {
@@ -22,6 +23,11 @@
         {
             "name": "Gabriel BONDAZ",
             "email": "gabriel.bondaz@idci-consulting.fr",
+            "role": "Developer"
+        },
+        {
+            "name": "Nicolas PINON",
+            "email": "nicolas.pinon@businessdecision.com",
             "role": "Developer"
         }
     ],
